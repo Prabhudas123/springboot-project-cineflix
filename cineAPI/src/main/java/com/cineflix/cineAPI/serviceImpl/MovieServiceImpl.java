@@ -9,6 +9,10 @@ import com.cineflix.cineAPI.repository.CinemaRepo;
 import com.cineflix.cineAPI.service.FileService;
 import com.cineflix.cineAPI.service.MovieService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -149,11 +153,49 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public MoviePageResponse getAllMoviesWithPagination(Integer pageNumber, Integer pageSize) {
-        return null;
+        Pageable pageable = PageRequest.of(pageNumber,pageSize);
+        Page<Cinema> cinemaPage = cinemaRepo.findAll(pageable);
+        List<Cinema> cinemas = cinemaPage.getContent();
+        List<CinemaDto> cinemaDtos = new ArrayList<>();
+        for (Cinema cinema : cinemas){
+            String posterUrl = baseurl+"/file/"+cinema.getPoster();
+            CinemaDto cinemaDto = new CinemaDto(
+                    cinema.getMovieId(),
+                    cinema.getTitle(),
+                    cinema.getDirector(),
+                    cinema.getStudio(),
+                    cinema.getMovieCast(),
+                    cinema.getMovieYear(),
+                    cinema.getPoster(),
+                    posterUrl
+            );
+            cinemaDtos.add(cinemaDto);
+        }
+        return new MoviePageResponse(cinemaDtos,pageNumber,pageSize,cinemaPage.getTotalPages(),cinemaPage.getTotalElements(),cinemaPage.isLast());
     }
 
     @Override
     public MoviePageResponse getAllMoviesWithPaginationAndSorting(Integer pageNumber, Integer pageSize, String sortBy, String dir) {
-        return null;
+        Sort sort = dir.equalsIgnoreCase("asc")?Sort.by(sortBy).ascending()
+                :Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
+        Page<Cinema> cinemaPage = cinemaRepo.findAll(pageable);
+        List<Cinema> cinemas = cinemaPage.getContent();
+        List<CinemaDto> cinemaDtos = new ArrayList<>();
+        for (Cinema cinema : cinemas){
+            String posterUrl = baseurl+"/file/"+cinema.getPoster();
+            CinemaDto cinemaDto = new CinemaDto(
+                    cinema.getMovieId(),
+                    cinema.getTitle(),
+                    cinema.getDirector(),
+                    cinema.getStudio(),
+                    cinema.getMovieCast(),
+                    cinema.getMovieYear(),
+                    cinema.getPoster(),
+                    posterUrl
+            );
+            cinemaDtos.add(cinemaDto);
+        }
+        return new MoviePageResponse(cinemaDtos,pageNumber,pageSize,cinemaPage.getTotalPages(),cinemaPage.getTotalElements(),cinemaPage.isLast());
     }
 }

@@ -6,6 +6,6 @@ public record MoviePageResponse(List<CinemaDto> cinemaDtos,
                                 Integer pageNum,
                                 Integer pageSize,
                                 int totalElements,
-                                int totalPages,
+                                long totalPages,
                                 boolean isLast) {
 }

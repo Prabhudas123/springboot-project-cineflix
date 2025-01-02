@@ -1,7 +1,9 @@
 package com.cineflix.cineAPI.controllers;
 
 import com.cineflix.cineAPI.dto.CinemaDto;
+import com.cineflix.cineAPI.dto.MoviePageResponse;
 import com.cineflix.cineAPI.service.MovieService;
+import com.cineflix.cineAPI.utils.AppConstants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
@@ -48,6 +50,23 @@ public class CinemaController {
     @DeleteMapping("/delete/{movieId}")
     public ResponseEntity<String> deleteMovieHandler(@PathVariable Integer movieId) throws IOException {
         return ResponseEntity.ok(movieService.deleteMovie(movieId));
+    }
+    @GetMapping("/getAllPage")
+    public ResponseEntity<MoviePageResponse> getAllMoviesByPagination(
+            @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
+            @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize
+    ){
+        return ResponseEntity.ok(movieService.getAllMoviesWithPagination(pageNumber,pageSize));
+    }
+
+    @GetMapping("/getAllPageoSort")
+    public ResponseEntity<MoviePageResponse> getAllMoviesByPaginationAndSorting(
+            @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
+            @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
+            @RequestParam(defaultValue = AppConstants.SORT_BY) String sortBy,
+            @RequestParam(defaultValue = AppConstants.SORT_DIR) String sortDir
+    ){
+        return ResponseEntity.ok(movieService.getAllMoviesWithPaginationAndSorting(pageNumber,pageSize,sortBy,sortDir));
     }
 
     public CinemaDto convertToDto(String cinemaDto) throws JsonProcessingException {
